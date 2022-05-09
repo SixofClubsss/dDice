@@ -64,6 +64,26 @@ Function InitializePrivate() Uint64
     100 STORE("Over-x10", 90)
     101 STORE("Under-x10", 10)
 
+    // In-contract stats tracking for total plays (per multiplier) and wins to calculate historical odds
+    120 STORE("2xPlays", 0)
+    121 STORE("2xWins", 0)
+    125 STORE("3xPlays", 0)
+    126 STORE("3xWins", 0)
+    130 STORE("4xPlays", 0)
+    131 STORE("4xWins", 0)
+    135 STORE("5xPlays", 0)
+    136 STORE("5xWins", 0)
+    140 STORE("6xPlays", 0)
+    141 STORE("6xWins", 0)
+    145 STORE("7xPlays", 0)
+    146 STORE("7xWins", 0)
+    150 STORE("8xPlays", 0)
+    151 STORE("8xWins", 0)
+    155 STORE("9xPlays", 0)
+    156 STORE("9xWins", 0)
+    160 STORE("10xPlays", 0)
+    161 STORE("10xWins", 0)
+
     190 STORE("minMultiplier", 2) // Sets the minimum multiplier. If this is modified, be sure to add over/under references above
     191 STORE("maxMultiplier", 10)  // Sets the maximum multiplier. If this is modified, be sure to add over/under references above
 
@@ -89,6 +109,7 @@ Function RollDiceHigh(multiplier Uint64) Uint64
     13  LET currentHeight = BLOCK_HEIGHT()
     14  LET betAmount = DEROVALUE()
     15  LET sendToAddr = SIGNER()
+    16  IF ADDRESS_STRING(sendToAddr) == "" THEN GOTO 500   // If ringsize is != 2, we just return 0, append balance and close out. We cannot send funds back or anything, so it is added to SC balance. This should be WARNING on all dApp frontends
 
     40  LET minWager = LOAD("minWager")
     41  LET maxWager = LOAD("maxWager")
@@ -102,11 +123,13 @@ Function RollDiceHigh(multiplier Uint64) Uint64
 
     70  LET rolledNum = RANDOM(99)  // Randomly choose a number between 0 and 99
     80  LET targetNumber = LOAD("Over-x" + multiplier)
+    85  STORE(multiplier + "xPlays", LOAD(multiplier + "xPlays") + 1)   // Append 1 play to the multiplier plays for stats/odds
     90  IF rolledNum >= targetNumber THEN GOTO 100 ELSE GOTO 500
 
     100 IF LOAD("balance") < payoutAmount THEN GOTO 900 // If balance cannot cover the potential winnings, error out and send DERO back to SIGNER()
     120 SEND_DERO_TO_ADDRESS(sendToAddr, payoutAmount)
     125 STORE("balance", LOAD("balance") + (betAmount - payoutAmount))
+    126 STORE(multiplier + "xWins", LOAD(multiplier + "xWins") + 1) // Append 1 win to the multiplier wins for stats/odds
     130 RETURN 0
 
     500 STORE("balance", LOAD("balance") + betAmount)
@@ -123,6 +146,7 @@ Function RollDiceLow(multiplier Uint64) Uint64
     13  LET currentHeight = BLOCK_HEIGHT()
     14  LET betAmount = DEROVALUE()
     15  LET sendToAddr = SIGNER()
+    16  IF ADDRESS_STRING(sendToAddr) == "" THEN GOTO 500   // If ringsize is != 2, we just return 0, append balance and close out. We cannot send funds back or anything, so it is added to SC balance. This should be WARNING on all dApp frontends
 
     40  LET minWager = LOAD("minWager")
     41  LET maxWager = LOAD("maxWager")
@@ -136,11 +160,13 @@ Function RollDiceLow(multiplier Uint64) Uint64
 
     70  LET rolledNum = RANDOM(99)  // Randomly choose a number between 0 and 99
     80  LET targetNumber = LOAD("Under-x" + multiplier)
+    85  STORE(multiplier + "xPlays", LOAD(multiplier + "xPlays") + 1)   // Append 1 play to the multiplier plays for stats/odds
     90  IF rolledNum <= targetNumber THEN GOTO 100 ELSE GOTO 500
 
     100 IF LOAD("balance") < payoutAmount THEN GOTO 900 // If balance cannot cover the potential winnings, error out and send DERO back to SIGNER()
     120 SEND_DERO_TO_ADDRESS(sendToAddr, payoutAmount)
     125 STORE("balance", LOAD("balance") + (betAmount - payoutAmount))
+    126 STORE(multiplier + "xWins", LOAD(multiplier + "xWins") + 1) // Append 1 win to the multiplier wins for stats/odds
     130 RETURN 0
 
     500 STORE("balance", LOAD("balance") + betAmount)
