@@ -16,15 +16,15 @@ The high and low numbers are defined as such:
 ### Disclaimer
 This disclaimer will be updated when the code is ready for production, as of right now it is not and recently forked from an otherwise abandoned repository in order to be re-written to support the latest DERO-HE/Stargate codebase (https://github.com/deroproject/derohe). 
 
-We are not responsible for any lost funds through the usage of this contract. Please deploy and utilize at your own risk.
+We are not responsible for any lost funds through the usage of this contract. Please deploy and utilize at your own risk. Always use ringsize=2 when interacting with this contract to prevent loss of funds, see lines 16 in each roll function.
 
 ### DERO Dice Template
 
-Deploy the `DeroDice.bas` contents and list the deployed SCID into your dApp.
+Deploy the `contract/dDice.bas` contents and list the deployed SCID into your dApp.
 
-1) Install DeroDice
+1) Install dDice
 ```
-curl --request POST --data-binary @DeroDice.bas http://127.0.0.1:40403/install_sc
+curl --request POST --data-binary @dDice.bas http://127.0.0.1:40403/install_sc
 ```
 Cost to deploy: 0.06918 (possibly optimized over time/updates)
 Cost to play: 0.00258 (possibly optimized over time/updates)
