@@ -14,17 +14,36 @@ The high and low numbers are defined as such:
 ```
 
 ### Disclaimer
-This disclaimer will be updated when the code is ready for production, as of right now it is not and recently forked from an otherwise abandoned repository in order to be re-written to support the latest DERO-HE/Stargate codebase (https://github.com/deroproject/derohe). 
+We are not responsible for any lost funds through the usage of this contract. Please deploy and utilize at your own risk. ALWAYS USE RINGSIZE=2 when interacting with this contract to prevent loss of funds, see [line 16](https://github.com/newvcas8372/dDice/blob/main/contract/dDice.bas#L75) in each roll function. You CAN donate anonymously with ringsize > 2.
 
-We are not responsible for any lost funds through the usage of this contract. Please deploy and utilize at your own risk. Always use ringsize=2 when interacting with this contract to prevent loss of funds, see lines 16 in each roll function.
+### SCID (Contract ID)
+[ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af](https://explorer.dero.io/tx/ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af)
 
-### DERO Dice Template
+### e.x.1 (Roll High with 2x Multiplier - Wagering 0.05 DERO):
+TX Fee: ~0.00258
+```
+curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":5000,"ringsize":2,"scid":"ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"RollDiceHigh"},{"name":"multiplier","datatype":"U","value":2}] }}' -H 'Content-Type: application/json'
+```
+
+### e.x.2 (Roll Low with 5x Multiplier - Wagering 0.1 DERO):
+TX Fee: ~0.00258
+```
+curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":10000,"ringsize":2,"scid":"ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"RollDiceLow"},{"name":"multiplier","datatype":"U","value":5}] }}' -H 'Content-Type: application/json'
+```
+
+### DONATE (Donates DERO to dDice Liquidity Anonymously - Donating 1 DERO):
+TX Fee: ~0.00289
+```
+curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":100000,"ringsize":16,"scid":"ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"Donate"}] }}' -H 'Content-Type: application/json'
+```
+
+### DERO Dice Template (Install your own!)
 
 Deploy the `contract/dDice.bas` contents and list the deployed SCID into your dApp.
 
-1) Install dDice
+Install dDice
 ```
-curl --request POST --data-binary @dDice.bas http://127.0.0.1:40403/install_sc
+curl --request POST --data-binary @dDice.bas http://127.0.0.1:10103/install_sc
 ```
 Cost to deploy: ~0.08745 (possibly optimized over time/updates)
 
@@ -210,3 +229,6 @@ Function Withdraw(amount Uint64) Uint64
     50  RETURN 0
 End Function
 ```
+
+### Future
+Future item will include a template of a dApp/local html/js page which will query the stats and provide necessary details for playing etc.
