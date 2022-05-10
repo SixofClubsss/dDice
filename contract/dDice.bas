@@ -82,23 +82,27 @@ Function RollDiceHigh(multiplier Uint64) Uint64
     50  IF betAmount > maxWager THEN GOTO 900
     55  LET payoutAmount = LOAD("sc_giveback") * betAmount * multiplier / 10000
     
-    60  IF EXISTS("Over-x" + multiplier) == 1 THEN GOTO 70 ELSE GOTO 900
+    60  IF EXISTS("Over-x" + ITOA(multiplier)) == 1 THEN GOTO 70 ELSE GOTO 900
 
     70  LET rolledNum = RANDOM(99)
-    80  LET targetNumber = LOAD("Over-x" + multiplier)
-    85  STORE(multiplier + "xPlays", LOAD(multiplier + "xPlays") + 1)
+    80  LET targetNumber = LOAD("Over-x" + ITOA(multiplier))
+    85  STORE(ITOA(multiplier) + "xPlays", LOAD(ITOA(multiplier) + "xPlays") + 1)
     90  IF rolledNum >= targetNumber THEN GOTO 100 ELSE GOTO 500
 
-    100 IF LOAD("balance") < payoutAmount THEN GOTO 900
+    100 IF LOAD("balance") < payoutAmount THEN GOTO 700
     120 SEND_DERO_TO_ADDRESS(sendToAddr, payoutAmount)
     125 STORE("balance", LOAD("balance") + (betAmount - payoutAmount))
-    126 STORE(multiplier + "xWins", LOAD(multiplier + "xWins") + 1)
+    126 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1)
     130 RETURN 0
 
     500 STORE("balance", LOAD("balance") + betAmount)
     505 RETURN 0
 
-    900 SEND_DERO_TO_ADDRESS(sendToAddr, DEROVALUE())
+    700 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1)
+    710 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
+    720 RETURN 0
+
+    900 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
     910 RETURN 0
 End Function
 
@@ -118,23 +122,27 @@ Function RollDiceLow(multiplier Uint64) Uint64
     50  IF betAmount > maxWager THEN GOTO 900
     55  LET payoutAmount = LOAD("sc_giveback") * betAmount * multiplier / 10000
     
-    60  IF EXISTS("Under-x" + multiplier) == 1 THEN GOTO 70 ELSE GOTO 900
+    60  IF EXISTS("Under-x" + ITOA(multiplier)) == 1 THEN GOTO 70 ELSE GOTO 900
 
     70  LET rolledNum = RANDOM(99)
-    80  LET targetNumber = LOAD("Under-x" + multiplier)
-    85  STORE(multiplier + "xPlays", LOAD(multiplier + "xPlays") + 1)
+    80  LET targetNumber = LOAD("Under-x" + ITOA(multiplier))
+    85  STORE(ITOA(multiplier) + "xPlays", LOAD(ITOA(multiplier) + "xPlays") + 1)
     90  IF rolledNum <= targetNumber THEN GOTO 100 ELSE GOTO 500
 
-    100 IF LOAD("balance") < payoutAmount THEN GOTO 900
+    100 IF LOAD("balance") < payoutAmount THEN GOTO 700
     120 SEND_DERO_TO_ADDRESS(sendToAddr, payoutAmount)
     125 STORE("balance", LOAD("balance") + (betAmount - payoutAmount))
-    126 STORE(multiplier + "xWins", LOAD(multiplier + "xWins") + 1)
+    126 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1)
     130 RETURN 0
 
     500 STORE("balance", LOAD("balance") + betAmount)
     505 RETURN 0
 
-    900 SEND_DERO_TO_ADDRESS(sendToAddr, DEROVALUE())
+    700 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1)
+    710 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
+    720 RETURN 0
+
+    900 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
     910 RETURN 0
 End Function
 

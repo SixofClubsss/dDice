@@ -26,7 +26,8 @@ Deploy the `contract/dDice.bas` contents and list the deployed SCID into your dA
 ```
 curl --request POST --data-binary @dDice.bas http://127.0.0.1:40403/install_sc
 ```
-Cost to deploy: 0.06918 (possibly optimized over time/updates)
+Cost to deploy: 0.08809 (possibly optimized over time/updates)
+
 Cost to play: 0.00258 (possibly optimized over time/updates)
 
 Comment-heavy codebase:
@@ -119,23 +120,27 @@ Function RollDiceHigh(multiplier Uint64) Uint64
     50  IF betAmount > maxWager THEN GOTO 900 // If value is more than stored maximum wager, send bet DERO back
     55  LET payoutAmount = LOAD("sc_giveback") * betAmount * multiplier / 10000
     
-    60  IF EXISTS("Over-x" + multiplier) == 1 THEN GOTO 70 ELSE GOTO 900
+    60  IF EXISTS("Over-x" + ITOA(multiplier)) == 1 THEN GOTO 70 ELSE GOTO 900
 
     70  LET rolledNum = RANDOM(99)  // Randomly choose a number between 0 and 99
-    80  LET targetNumber = LOAD("Over-x" + multiplier)
-    85  STORE(multiplier + "xPlays", LOAD(multiplier + "xPlays") + 1)   // Append 1 play to the multiplier plays for stats/odds
+    80  LET targetNumber = LOAD("Over-x" + ITOA(multiplier))
+    85  STORE(ITOA(multiplier) + "xPlays", LOAD(ITOA(multiplier) + "xPlays") + 1)   // Append 1 play to the multiplier plays for stats/odds
     90  IF rolledNum >= targetNumber THEN GOTO 100 ELSE GOTO 500
 
-    100 IF LOAD("balance") < payoutAmount THEN GOTO 900 // If balance cannot cover the potential winnings, error out and send DERO back to SIGNER()
+    100 IF LOAD("balance") < payoutAmount THEN GOTO 700 // If balance cannot cover the potential winnings, error out and send DERO back to SIGNER()
     120 SEND_DERO_TO_ADDRESS(sendToAddr, payoutAmount)
     125 STORE("balance", LOAD("balance") + (betAmount - payoutAmount))
-    126 STORE(multiplier + "xWins", LOAD(multiplier + "xWins") + 1) // Append 1 win to the multiplier wins for stats/odds
+    126 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1) // Append 1 win to the multiplier wins for stats/odds
     130 RETURN 0
 
     500 STORE("balance", LOAD("balance") + betAmount)
     505 RETURN 0
 
-    900 SEND_DERO_TO_ADDRESS(sendToAddr, DEROVALUE())
+    700 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1)
+    710 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
+    720 RETURN 0
+
+    900 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
     910 RETURN 0
 End Function
 
@@ -156,23 +161,27 @@ Function RollDiceLow(multiplier Uint64) Uint64
     50  IF betAmount > maxWager THEN GOTO 900 // If value is more than stored maximum wager, send bet DERO back
     55  LET payoutAmount = LOAD("sc_giveback") * betAmount * multiplier / 10000
     
-    60  IF EXISTS("Under-x" + multiplier) == 1 THEN GOTO 70 ELSE GOTO 900
+    60  IF EXISTS("Under-x" + ITOA(multiplier)) == 1 THEN GOTO 70 ELSE GOTO 900
 
     70  LET rolledNum = RANDOM(99)  // Randomly choose a number between 0 and 99
-    80  LET targetNumber = LOAD("Under-x" + multiplier)
-    85  STORE(multiplier + "xPlays", LOAD(multiplier + "xPlays") + 1)   // Append 1 play to the multiplier plays for stats/odds
+    80  LET targetNumber = LOAD("Under-x" + ITOA(multiplier))
+    85  STORE(ITOA(multiplier) + "xPlays", LOAD(ITOA(multiplier) + "xPlays") + 1)   // Append 1 play to the multiplier plays for stats/odds
     90  IF rolledNum <= targetNumber THEN GOTO 100 ELSE GOTO 500
 
-    100 IF LOAD("balance") < payoutAmount THEN GOTO 900 // If balance cannot cover the potential winnings, error out and send DERO back to SIGNER()
+    100 IF LOAD("balance") < payoutAmount THEN GOTO 700 // If balance cannot cover the potential winnings, error out and send DERO back to SIGNER()
     120 SEND_DERO_TO_ADDRESS(sendToAddr, payoutAmount)
     125 STORE("balance", LOAD("balance") + (betAmount - payoutAmount))
-    126 STORE(multiplier + "xWins", LOAD(multiplier + "xWins") + 1) // Append 1 win to the multiplier wins for stats/odds
+    126 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1) // Append 1 win to the multiplier wins for stats/odds
     130 RETURN 0
 
     500 STORE("balance", LOAD("balance") + betAmount)
     505 RETURN 0
 
-    900 SEND_DERO_TO_ADDRESS(sendToAddr, DEROVALUE())
+    700 STORE(ITOA(multiplier) + "xWins", LOAD(ITOA(multiplier) + "xWins") + 1)
+    710 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
+    720 RETURN 0
+
+    900 SEND_DERO_TO_ADDRESS(sendToAddr, betAmount)
     910 RETURN 0
 End Function
 
