@@ -26,9 +26,9 @@ Deploy the `contract/dDice.bas` contents and list the deployed SCID into your dA
 ```
 curl --request POST --data-binary @dDice.bas http://127.0.0.1:40403/install_sc
 ```
-Cost to deploy: 0.08809 (possibly optimized over time/updates)
+Cost to deploy: ~0.08745 (possibly optimized over time/updates)
 
-Cost to play: 0.00258 (possibly optimized over time/updates)
+Cost to play: ~0.00258 (possibly optimized over time/updates)
 
 Comment-heavy codebase:
 ```go
@@ -40,8 +40,8 @@ Comment-heavy codebase:
 
 Function InitializePrivate() Uint64
     10  STORE("owner", SIGNER())
-    20  STORE("minWager", 50000)  // Sets minimum wager (DERO is 5 atomic units)
-    30  STORE("maxWager", 1000000)  // Sets maximum wager (DERO is 5 atomic units)
+    20  STORE("minWager", 5000)  // Sets minimum wager (DERO is 5 atomic units)
+    30  STORE("maxWager", 500000)  // Sets maximum wager (DERO is 5 atomic units)
     40  STORE("sc_giveback", 9800)  // Sets the SC giveback on reward payout, 2% to pool, 98% to winner (9800) for example
     50  STORE("balance", 0) // Tracks balance
 
@@ -203,13 +203,10 @@ End Function
 
 // Withdraw a given amount of DERO from the contract
 Function Withdraw(amount Uint64) Uint64
-    10  dim bal as Uint64
-    15  LET bal == LOAD("balance")
-    20  IF LOAD("owner") == SIGNER() THEN GOTO 30 
-    25  RETURN 1
-    30  IF bal < amount THEN GOTO 25
-    40  SEND_DERO_TO_ADDRESS(SIGNER(),amount)
-    50  STORE("balance", bal - amount)
-    60  RETURN 0
+    10  IF LOAD("owner") == SIGNER() THEN GOTO 20 ELSE GOTO 50
+    20  IF LOAD("balance") < amount THEN GOTO 50
+    30  SEND_DERO_TO_ADDRESS(SIGNER(), amount)
+    40  STORE("balance", LOAD("balance") - amount)
+    50  RETURN 0
 End Function
 ```

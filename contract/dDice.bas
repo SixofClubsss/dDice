@@ -6,8 +6,8 @@
 
 Function InitializePrivate() Uint64
     10  STORE("owner", SIGNER())
-    20  STORE("minWager", 50000)
-    30  STORE("maxWager", 1000000)
+    20  STORE("minWager", 5000)
+    30  STORE("maxWager", 500000)
     40  STORE("sc_giveback", 9800)
     50  STORE("balance", 0)
 
@@ -161,12 +161,9 @@ Function ClaimOwnership() Uint64
 End Function
 
 Function Withdraw(amount Uint64) Uint64
-    10  dim bal as Uint64
-    15  LET bal == LOAD("balance")
-    20  IF LOAD("owner") == SIGNER() THEN GOTO 30 
-    25  RETURN 1
-    30  IF bal < amount THEN GOTO 25
-    40  SEND_DERO_TO_ADDRESS(SIGNER(),amount)
-    50  STORE("balance", bal - amount)
-    60  RETURN 0
+    10  IF LOAD("owner") == SIGNER() THEN GOTO 20 ELSE GOTO 50
+    20  IF LOAD("balance") < amount THEN GOTO 50
+    30  SEND_DERO_TO_ADDRESS(SIGNER(), amount)
+    40  STORE("balance", LOAD("balance") - amount)
+    50  RETURN 0
 End Function
