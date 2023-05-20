@@ -14,27 +14,27 @@ The high and low numbers are defined as such:
 ```
 
 ### Disclaimer
-We are not responsible for any lost funds through the usage of this contract. Please deploy and utilize at your own risk. ALWAYS USE RINGSIZE=2 when interacting with this contract to prevent loss of funds, see [line 16](https://github.com/newvcas8372/dDice/blob/main/contract/dDice.bas#L75) in each roll function. You CAN donate anonymously with ringsize > 2.
+We are not responsible for any lost funds through the usage of this contract. Please deploy and utilize at your own risk. ALWAYS USE RINGSIZE=2 when interacting with this contract to prevent loss of funds, see [line 16](https://github.com/newvcas8372/dDice/blob/main/contract/dDice.bas#L77) in each roll function. You CAN donate anonymously with ringsize > 2.
 
 ### SCID (Contract ID)
-[ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af](https://explorer.dero.io/tx/ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af)
+[fe61b1ac6edbe18180d2863f05d1dfb26a767abdfc0488cbe4970d950ef45de8](https://explorer.dero.io/tx/fe61b1ac6edbe18180d2863f05d1dfb26a767abdfc0488cbe4970d950ef45de8)
 
 ### e.x.1 (Roll High with 2x Multiplier - Wagering 0.05 DERO):
 TX Fee: ~0.00258
 ```
-curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":5000,"ringsize":2,"scid":"ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"RollDiceHigh"},{"name":"multiplier","datatype":"U","value":2}] }}' -H 'Content-Type: application/json'
+curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":5000,"ringsize":2,"scid":"fe61b1ac6edbe18180d2863f05d1dfb26a767abdfc0488cbe4970d950ef45de8","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"RollDiceHigh"},{"name":"multiplier","datatype":"U","value":2}] }}' -H 'Content-Type: application/json'
 ```
 
 ### e.x.2 (Roll Low with 5x Multiplier - Wagering 0.1 DERO):
 TX Fee: ~0.00258
 ```
-curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":10000,"ringsize":2,"scid":"ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"RollDiceLow"},{"name":"multiplier","datatype":"U","value":5}] }}' -H 'Content-Type: application/json'
+curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":10000,"ringsize":2,"scid":"fe61b1ac6edbe18180d2863f05d1dfb26a767abdfc0488cbe4970d950ef45de8","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"RollDiceLow"},{"name":"multiplier","datatype":"U","value":5}] }}' -H 'Content-Type: application/json'
 ```
 
 ### DONATE (Donates DERO to dDice Liquidity Anonymously - Donating 1 DERO):
 TX Fee: ~0.00289
 ```
-curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":100000,"ringsize":16,"scid":"ae55db1581b79f02f86b70fc338a7b91b14ded071a31972d9cfdb0eca6e302af","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"Donate"}] }}' -H 'Content-Type: application/json'
+curl http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"scinvoke","params":{"sc_dero_deposit":100000,"ringsize":16,"scid":"fe61b1ac6edbe18180d2863f05d1dfb26a767abdfc0488cbe4970d950ef45de8","sc_rpc":[{"name":"entrypoint","datatype":"S","value":"Donate"}] }}' -H 'Content-Type: application/json'
 ```
 
 ### DERO Dice Template (Install your own!)
@@ -58,7 +58,8 @@ Comment-heavy codebase:
 */
 
 Function InitializePrivate() Uint64
-    10  STORE("owner", SIGNER())
+    10  IF EXISTS("owner") == 0 THEN GOTO 15 ELSE GOTO 999
+    15  STORE("owner", SIGNER())
     20  STORE("minWager", 5000)  // Sets minimum wager (DERO is 5 atomic units)
     30  STORE("maxWager", 500000)  // Sets maximum wager (DERO is 5 atomic units)
     40  STORE("sc_giveback", 9800)  // Sets the SC giveback on reward payout, 2% to pool, 98% to winner (9800) for example
@@ -108,6 +109,7 @@ Function InitializePrivate() Uint64
     191 STORE("maxMultiplier", 10)  // Sets the maximum multiplier. If this is modified, be sure to add over/under references above
 
     210 RETURN 0
+    999 RETURN 1
 End Function
 
 // Donates balance to the SC. This can be done anonymously as no SIGNER() method is used
