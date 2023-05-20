@@ -5,7 +5,8 @@
 */
 
 Function InitializePrivate() Uint64
-    10  STORE("owner", SIGNER())
+    10  IF EXISTS("owner") == 0 THEN GOTO 15 ELSE GOTO 999
+    15  STORE("owner", SIGNER())
     20  STORE("minWager", 5000)
     30  STORE("maxWager", 500000)
     40  STORE("sc_giveback", 9800)
@@ -53,6 +54,7 @@ Function InitializePrivate() Uint64
     191 STORE("maxMultiplier", 10)
 
     210 RETURN 0
+    999 RETURN 1
 End Function
 
 Function Donate() Uint64
