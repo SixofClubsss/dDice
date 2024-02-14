@@ -1,3 +1,11 @@
+# dDice
+
+dDice, decentralized dice games built on [Dero's](https://dero.io) decentralized application platform. 
+
+[dDice origin](https://github.com/newvcas8372/dDice)
+
+[dDice7 expansion](#ddice7)
+
 ## contract/dDice.bas
 Attempt at similar product as Ether Dice etc. Dice rolling game in which you can choose between a 2x and a 10x multiplier (increment by 1s [e.g. 2x, 3x, 4x, ... 10x]) and roll high or low.
 The high and low numbers are defined as such:
@@ -232,5 +240,66 @@ Function Withdraw(amount Uint64) Uint64
 End Function
 ```
 
-### Future
-Future item will include a template of a dApp/local html/js page which will query the stats and provide necessary details for playing etc.
+### dDice7
+dDice7 was built off the dDice foundation. dDice7 is a craps style expansion. dDice7 UI is built using [Fyne toolkit](https://fyne.io/) and powered by [Gnomon](https://github.com/civilware/Gnomon) and [dReams](https://dreamdapps.io). 
+
+![goMod](https://img.shields.io/github/go-mod/go-version/SixofClubsss/dDice.svg)![goReport](https://goreportcard.com/badge/github.com/SixofClubsss/dDice)[![goDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/SixofClubsss/dDice)
+
+dDice7 can be played on [dReams](https://dreamdapps.io/download) app.
+
+### SCID (Contract ID)
+[fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd](https://explorer.dero.io/tx/fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd)
+
+### Added features
+- Craps style game with proposition (one time) and place (recurring) bets
+- Multiplayer table where each roll effects all players at the table
+- Multi currency betting
+
+### Bets
+- Prop (single roll)
+    - (0) Under 7 pays 1:1
+    - (1) Over 7 pays 1:1
+    - (2) Any 7 pays 4:1
+    - (3) Any crap (2 or 3 or 12)  pays 7:1 
+    - (4) Ace deuce (1 and 2) pays 15:1
+    - (5) YO (5 & 6) pays 15:1
+    - (6) Aces (1 & 1) pays 30:1
+    - (7) Midnight (6 & 6) pays 30:1
+- Place (multi roll)
+    - (0) Place 4 pays 9:5
+    - (1) Place 5 pays 7:5
+    - (2) Place 6 pays 7:6
+    - (3) Place 8 pays 7:6
+    - (4) Place 9 pays 7:5
+    - (5) Place 10 pays 9:5
+    - (6) Field (3, 4, 9, 10 11) pays 1:1 and (2, 12) pays 2:1
+    - Inside (Place on  5, 6, 8 and 9)
+    - Outside (Place on  4 and 10)
+
+### e.x.1 (Roll dice with Over 7 bet - Wagering 0.05 DERO):
+TX Fee: ~0.00380
+```
+curl -u user:pass http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"transfer","params":{"transfers":
+[{"destination":"dero1qy3ef7nudlawzmwk90n4dtqpyadgl4cw04th3wnrnk2g5nz457adqqg7j9kw3", "burn":5000}], "fees":380, "scid":"fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd","ringsize":2, "sc_rpc":[{"name":"entrypoint","datatype":"S","value":"Roll"}, {"name":"bet","datatype":"U","value":1}] }}' -H 'Content-Type: application/json';
+```
+
+### e.x.2 (Place bet on 8 - Wagering 10 dReams):
+TX Fee: ~0.00280
+```
+curl -u user:pass http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"transfer","params":{"transfers":
+[{"scid":"ad2e7b37c380cc1aed3a6b27224ddfc92a2d15962ca1f4d35e530dba0f9575a9", "burn":1000000}], "fees":280, "scid":"fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd","ringsize":2, "sc_rpc":[{"name":"entrypoint","datatype":"S","value":"Place"}, {"name":"p","datatype":"U","value":3}] }}' -H 'Content-Type: application/json';
+```
+
+### e.x.3 (Inside bet - Wagering 0.2 DERO total, 0.05 placed on 5, 6, 8 and 9 respectively):
+TX Fee: ~0.00450
+```
+curl -u user:pass http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0","method":"transfer","params":{"transfers":
+[{"destination":"dero1qy3ef7nudlawzmwk90n4dtqpyadgl4cw04th3wnrnk2g5nz457adqqg7j9kw3", "burn":20000}], "fees":450, "scid":"fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd","ringsize":2, "sc_rpc":[{"name":"entrypoint","datatype":"S","value":"Inside"}] }}' -H 'Content-Type: application/json';
+```
+
+### Licensing
+
+dDice is free and open source.
+dDice smart contract forked from [newvcas8372/dDice](https://github.com/newvcas8372/dDice) under [BSD 3-Clause License](https://github.com/newvcas8372/dDice/blob/main/LICENSE).    
+dDice expansion source code is published under the [MIT License](https://github.com/SixofClubsss/dDice/blob/main/LICENSE).   
+Copyright © 2024 SixofClubs        
