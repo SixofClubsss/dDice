@@ -1,4 +1,4 @@
-module dReam-dApps/extracted/dDice
+module github.com/SixofClubsss/dDice
 
 go 1.21.5
 
