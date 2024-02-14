@@ -298,8 +298,7 @@ curl -u user:pass http://127.0.0.1:10103/json_rpc -d '{"jsonrpc":"2.0","id":"0",
 ```
 
 ### Licensing
-
 dDice is free and open source.
 dDice smart contract forked from [newvcas8372/dDice](https://github.com/newvcas8372/dDice) under [BSD 3-Clause License](https://github.com/newvcas8372/dDice/blob/main/LICENSE).    
-dDice expansion source code is published under the [MIT License](https://github.com/SixofClubsss/dDice/blob/main/LICENSE).   
+dDice expansion source code is published under the [MIT License](https://github.com/SixofClubsss/dDice/blob/main/dice/LICENSE).   
 Copyright © 2024 SixofClubs        
