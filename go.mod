@@ -5,9 +5,9 @@ go 1.21.5
 require (
 	fyne.io/fyne/v2 v2.4.4-0.20231224124904-a09bbd790b98
 	github.com/blang/semver/v4 v4.0.0
-	github.com/civilware/Gnomon v0.0.0-20240102201536-a5900d5a61da
-	github.com/dReam-dApps/dReams v0.11.2-0.20240214081155-241d18796077
-	github.com/deroproject/derohe v0.0.0-20230604143809-765b2db1f482
+	github.com/civilware/Gnomon v0.0.0-20240215215804-cfa19c264d97
+	github.com/dReam-dApps/dReams v0.11.2-0.20240215220152-adde65297a95
+	github.com/deroproject/derohe v0.0.0-20240215152352-a5a0e6a68ada
 	github.com/sirupsen/logrus v1.9.3
 )
 

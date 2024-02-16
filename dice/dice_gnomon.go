@@ -168,7 +168,7 @@ func getStats() {
 						die1 := rpc.IntType(split[2])
 						die2 := rpc.IntType(split[3])
 						num := die1 + die2
-						results = results + fmt.Sprintf("Roll# %d - [%d]  (%d & %d)\n", i, num, die1, die2)
+						results = results + fmt.Sprintf("# %d - [%d]  (%d & %d)\n", i, num, die1, die2)
 					}
 				}
 			}

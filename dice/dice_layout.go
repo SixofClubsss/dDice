@@ -461,6 +461,8 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 						D.Actions.Hide()
 						resultsTop.Text = "Wait for block..."
 						resultsTop.Refresh()
+						resultsBottom.Text = ""
+						resultsBottom.Refresh()
 						go menu.ShowTxDialog("Roll", "", tx, 2*time.Second, d.Window)
 						rpc.ConfirmTx(tx, "Dice", 45)
 						resultsTop.Text = "Cleared your placed bets"
