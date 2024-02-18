@@ -54,17 +54,10 @@ func RollDice(amt uint64, b int, token string) (tx string) {
 		Fees:      fee,
 	}
 
-	client, ctx, cancel := rpc.SetWalletClient(rpc.Wallet.Rpc, rpc.Wallet.UserPass)
-	defer cancel()
-	if err := client.CallFor(ctx, &txid, "transfer", params); err != nil {
+	if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
 		rpc.PrintError("[Dice] Roll: %s", err)
 		return
 	}
-
-	// if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
-	// 	rpc.PrintError("[Baccarat] Bet: %s", err)
-	// 	return
-	// }
 
 	rpc.PrintLog("[Dice] Roll TX: %s", txid)
 
@@ -101,17 +94,10 @@ func PlaceBet(amt uint64, p int, token string) (tx string) {
 		Fees:      fee,
 	}
 
-	client, ctx, cancel := rpc.SetWalletClient(rpc.Wallet.Rpc, rpc.Wallet.UserPass)
-	defer cancel()
-	if err := client.CallFor(ctx, &txid, "transfer", params); err != nil {
+	if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
 		rpc.PrintError("[Dice] Place: %s", err)
 		return
 	}
-
-	// if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
-	// 	rpc.PrintError("[Baccarat] Bet: %s", err)
-	// 	return
-	// }
 
 	rpc.PrintLog("[Dice] Place TX: %s", txid)
 
@@ -150,17 +136,10 @@ func InsideOutside(amt uint64, out bool, token string) (tx string) {
 		Fees:      fee,
 	}
 
-	client, ctx, cancel := rpc.SetWalletClient(rpc.Wallet.Rpc, rpc.Wallet.UserPass)
-	defer cancel()
-	if err := client.CallFor(ctx, &txid, "transfer", params); err != nil {
+	if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
 		rpc.PrintError("[Dice] %s: %s", entrypoint, err)
 		return
 	}
-
-	// if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
-	// 	rpc.PrintError("[Baccarat] Bet: %s", err)
-	// 	return
-	// }
 
 	rpc.PrintLog("[Dice] %s TX: %s", entrypoint, txid)
 
@@ -191,17 +170,10 @@ func Clear(b uint64) (tx string) {
 		Fees:      fee,
 	}
 
-	client, ctx, cancel := rpc.SetWalletClient(rpc.Wallet.Rpc, rpc.Wallet.UserPass)
-	defer cancel()
-	if err := client.CallFor(ctx, &txid, "transfer", params); err != nil {
+	if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
 		rpc.PrintError("[Dice] Clear: %s", err)
 		return
 	}
-
-	// if err := rpc.Wallet.CallFor(&txid, "transfer", params); err != nil {
-	// 	rpc.PrintError("[Baccarat] Bet: %s", err)
-	// 	return
-	// }
 
 	rpc.PrintLog("[Dice] Clear TX: %s", txid)
 
