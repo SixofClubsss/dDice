@@ -144,10 +144,8 @@ func getStats() {
 			roll.max = max[0]
 		}
 
-		D.LeftLabel.SetText(fmt.Sprintf("Total Rolls: %d      Min Bet is %s DERO, Max Bet is %s       House: (%s DERO)  (%s dReams)", roll.total, rpc.FromAtomic(roll.min, 5), rpc.FromAtomic(roll.max, 5), roll.balance, roll.dbalance))
-		D.LeftLabel.Refresh()
-		D.RightLabel.SetText(fmt.Sprintf("dReams Balance: %s       Dero Balance: %s       Height: %s", rpc.DisplayBalance("dReams"), rpc.DisplayBalance("Dero"), rpc.Wallet.Display.Height))
-		D.RightLabel.Refresh()
+		D.Left.UpdateText()
+		D.Right.UpdateText()
 
 		placeChipStack()
 

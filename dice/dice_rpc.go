@@ -28,7 +28,7 @@ var roll dice7
 func RollDice(amt uint64, b int, token string) (tx string) {
 	args := dero.Arguments{
 		dero.Argument{Name: "entrypoint", DataType: "S", Value: "Roll"},
-		dero.Argument{Name: "bet", DataType: "U", Value: b},
+		dero.Argument{Name: "bet", DataType: "U", Value: uint64(b)},
 	}
 
 	scid := crypto.ZEROHASH
@@ -68,7 +68,7 @@ func RollDice(amt uint64, b int, token string) (tx string) {
 func PlaceBet(amt uint64, p int, token string) (tx string) {
 	args := dero.Arguments{
 		dero.Argument{Name: "entrypoint", DataType: "S", Value: "Place"},
-		dero.Argument{Name: "p", DataType: "U", Value: p},
+		dero.Argument{Name: "p", DataType: "U", Value: uint64(p)},
 	}
 
 	scid := crypto.ZEROHASH

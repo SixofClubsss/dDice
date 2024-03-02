@@ -20,17 +20,22 @@ import (
 	"github.com/dReam-dApps/dReams/rpc"
 )
 
-var D dreams.ContainerStack
+var D dwidget.ContainerStack
 
 var logRoll = widget.NewMultiLineEntry()
 var logPlaced = widget.NewLabel("")
 
 // Layout all Dice objects for app
 func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
-	D.LeftLabel = widget.NewLabel("")
-	D.RightLabel = widget.NewLabel("")
-	D.LeftLabel.SetText(fmt.Sprintf("Total Rolls: %d      Min Bet is %s DERO, Max Bet is %s       House: %s  DERO", roll.total, rpc.FromAtomic(roll.min, 5), rpc.FromAtomic(roll.max, 5), roll.balance))
-	D.RightLabel.SetText(fmt.Sprintf("dReams Balance: %s       Dero Balance: %s       Height: %s", rpc.DisplayBalance("dReams"), rpc.DisplayBalance("Dero"), rpc.Wallet.Display.Height))
+	// Set left label to update stats
+	D.Left.Label = widget.NewLabel("")
+	D.Left.SetUpdate(func() string {
+		return fmt.Sprintf("Total Rolls: %d      Min Bet is %s DERO, Max Bet is %s       House: (%s DERO)  (%s dReams)", roll.total, rpc.FromAtomic(roll.min, 5), rpc.FromAtomic(roll.max, 5), roll.balance, roll.dbalance)
+	})
+
+	// Set right label to update wallet info
+	D.Right.Label = widget.NewLabel("")
+	D.Right.SetUpdate(dreams.SetBalanceLabelText)
 
 	// Create dice objects
 	die1, die2 := createDicePair(
@@ -70,7 +75,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 	currency := widget.NewSelect([]string{"DERO", "dReams"}, nil)
 
 	// Bet amount entry
-	entry := dwidget.NewDeroEntry("", 0.1, 5)
+	entry := dwidget.NewAmountEntry("", 0.1, 5)
 	entry.AllowFloat = true
 	entry.Validator = func(s string) (err error) {
 		var f float64
@@ -501,7 +506,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 
 	D.DApp = container.NewStack(
 		container.NewVBox(
-			dwidget.LabelColor(container.NewHBox(D.LeftLabel, layout.NewSpacer(), D.RightLabel))),
+			dwidget.LabelColor(container.NewHBox(D.Left.Label, layout.NewSpacer(), D.Right.Label))),
 		&D.Back,
 		&D.Front,
 		container.NewAdaptiveGrid(3,
