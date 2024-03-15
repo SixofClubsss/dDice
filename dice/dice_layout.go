@@ -22,6 +22,8 @@ import (
 
 var D dwidget.ContainerStack
 
+var die1, die2 die
+
 var logRoll = widget.NewMultiLineEntry()
 var logPlaced = widget.NewLabel("")
 
@@ -38,7 +40,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 	D.Right.SetUpdate(dreams.SetBalanceLabelText)
 
 	// Create dice objects
-	die1, die2 := createDicePair(
+	die1, die2 = createDicePair(
 		[6]*fyne.StaticResource{
 			resourceDice1Png,
 			resourceDice2Png,
@@ -49,6 +51,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 		canvas.NewImageFromResource(resourceDice0Png))
 
 	// Initialize chip stack images
+	setDefaultChips()
 	for i := 0; i < 21; i++ {
 		roll.stack = append(roll.stack, canvas.NewImageFromImage(nil))
 	}

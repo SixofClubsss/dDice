@@ -3,14 +3,22 @@ package dice
 import (
 	"fmt"
 	"math/rand"
+	"os"
+	"path/filepath"
+	"sort"
+	"strings"
 	"sync"
 	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"github.com/blang/semver/v4"
 	"github.com/civilware/Gnomon/structures"
+	dreams "github.com/dReam-dApps/dReams"
+	"github.com/dReam-dApps/dReams/gnomes"
+	"github.com/dReam-dApps/dReams/menu"
 	"github.com/dReam-dApps/dReams/rpc"
 	"github.com/sirupsen/logrus"
 )
@@ -22,42 +30,20 @@ type die struct {
 	sync.RWMutex
 }
 
+type settings struct {
+	dice dreams.AssetSelect
+}
+
 var DICESCID = "fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd"
 
 var logger = structures.Logger.WithFields(logrus.Fields{})
 
 var version = semver.MustParse("0.0.0-dev.x")
 
-var chipStack = map[uint64]*fyne.StaticResource{
-	0:  nil,
-	1:  resourceStack0Png,
-	2:  resourceStack1Png,
-	3:  resourceStack2Png,
-	4:  resourceStack3Png,
-	5:  resourceStack4Png,
-	6:  resourceStack5Png,
-	7:  resourceStack6Png,
-	8:  resourceStack7Png,
-	9:  resourceStack8Png,
-	10: resourceStack9Png,
-	11: resourceStack10Png,
-	12: resourceStack11Png,
-	13: resourceStack12Png,
-	14: resourceStack13Png,
-	15: resourceStack14Png,
-	16: resourceStack15Png,
-	17: resourceStack16Png,
-	18: resourceStack17Png,
-	19: resourceStack18Png,
-	20: resourceStack19Png,
-	21: resourceStack20Png,
-	22: resourceStack21Png,
-	23: resourceStack22Png,
-	24: resourceStack23Png,
-	25: resourceStack24Png,
-	26: resourceStack25Png,
-	27: resourceStack26Png,
-}
+var chipStack map[uint64]*fyne.StaticResource
+var Settings settings
+
+var pathDice = filepath.Join(dreams.GetDir(), "datashards", "assets", "dice")
 
 // Get current dice package version
 func Version() semver.Version {
@@ -412,4 +398,202 @@ func placeChipStack() {
 		D.Front.Objects[23] = canvas.NewImageFromImage(nil)
 		D.Front.Objects[24] = canvas.NewImageFromImage(nil)
 	}
+}
+
+// Set default chip stack images
+func setDefaultChips() {
+	if chipStack == nil {
+		chipStack = make(map[uint64]*fyne.StaticResource)
+	}
+
+	chipStack = map[uint64]*fyne.StaticResource{
+		0:  nil,
+		1:  resourceStack0Png,
+		2:  resourceStack1Png,
+		3:  resourceStack2Png,
+		4:  resourceStack3Png,
+		5:  resourceStack4Png,
+		6:  resourceStack5Png,
+		7:  resourceStack6Png,
+		8:  resourceStack7Png,
+		9:  resourceStack8Png,
+		10: resourceStack9Png,
+		11: resourceStack10Png,
+		12: resourceStack11Png,
+		13: resourceStack12Png,
+		14: resourceStack13Png,
+		15: resourceStack14Png,
+		16: resourceStack15Png,
+		17: resourceStack16Png,
+		18: resourceStack17Png,
+		19: resourceStack18Png,
+		20: resourceStack19Png,
+		21: resourceStack20Png,
+		22: resourceStack21Png,
+		23: resourceStack22Png,
+		24: resourceStack23Png,
+		25: resourceStack24Png,
+		26: resourceStack25Png,
+		27: resourceStack26Png,
+	}
+}
+
+// Switch dice images, downloads image files if none exists in pathDice
+func getDice(url string) {
+	var files []string
+	Settings.dice.URL = url
+	path := filepath.Join(pathDice, Settings.dice.Name, "dice1.png")
+	if !dreams.FileExists(path, "Dice") {
+		logger.Println("[Dice] Downloading " + Settings.dice.URL)
+		if err := dreams.DownloadFile(url, path); err != nil {
+			logger.Errorln("[getDice]", err)
+			return
+		}
+
+		files = GetZip(Settings.dice.Name, Settings.dice.URL)
+	} else {
+		var err error
+		files, err = filepath.Glob(filepath.Join(pathDice, Settings.dice.Name) + string(filepath.Separator) + "*.png")
+		if err != nil {
+			logger.Errorln("[getDice]", err)
+			return
+		}
+	}
+
+	if len(files) < 7 {
+		logger.Errorln("[getDice] Invalid number of dice asset files")
+		return
+	}
+
+	var diceRes [7]*fyne.StaticResource
+	for i := 0; i < 7; i++ {
+		by, err := os.ReadFile(files[i])
+		if err != nil {
+			logger.Errorln("[getDice]", err)
+			return
+		}
+		diceRes[i] = fyne.NewStaticResource(files[i], by)
+	}
+
+	die1, die2 = createDicePair(
+		[6]*fyne.StaticResource{
+			diceRes[1],
+			diceRes[2],
+			diceRes[3],
+			diceRes[4],
+			diceRes[5],
+			diceRes[6]},
+		canvas.NewImageFromResource(diceRes[0]))
+}
+
+// Handle zip files for packaged assets
+func GetZip(name, assetPath string) (filenames []string) {
+	err := os.MkdirAll(assetPath, os.ModePerm)
+	if err != nil {
+		logger.Errorln("[GetZip]", err)
+		return
+	}
+
+	path := filepath.Join(assetPath, name+".zip")
+	filenames, err = dreams.UnzipFile(path, strings.TrimSuffix(path, ".zip"))
+	if err != nil {
+		logger.Errorln("[GetZip]", err)
+		return
+	}
+
+	logger.Debugln("[GetZip] Unzipped files:\n" + strings.Join(filenames, "\n"))
+
+	return
+}
+
+// Dice dreams.AssetSelect
+func DiceSelect(assets map[string]string) fyne.CanvasObject {
+	var max *fyne.Container
+	options := []string{"Light", "Dark"}
+	icon := menu.AssetIcon(resourceDiceCirclePng.StaticContent, "", 60)
+	Settings.dice.Select = widget.NewSelect(options, nil)
+	Settings.dice.Select.SetSelectedIndex(0)
+	Settings.dice.Select.OnChanged = func(s string) {
+		switch Settings.dice.Select.SelectedIndex() {
+		case -1:
+			Settings.dice.Name = "light"
+		case 0:
+			Settings.dice.Name = "light"
+		case 1:
+			Settings.dice.Name = "dark"
+		default:
+			Settings.dice.Name = s
+		}
+
+		go func() {
+			scid := assets[s]
+			_, collection, _ := gnomes.GetAssetInfo(scid)
+			if menu.IsDreamsNFACollection(collection) {
+				getDice(gnomes.GetAssetUrl(0, scid))
+				max.Objects[1].(*fyne.Container).Objects[0].(*fyne.Container).Objects[0] = menu.SwitchProfileIcon(collection, s, gnomes.GetAssetUrl(1, scid), 60)
+			} else {
+				Settings.dice.URL = ""
+				img := canvas.NewImageFromResource(resourceDiceCirclePng)
+				img.SetMinSize(fyne.NewSize(60, 60))
+				max.Objects[1].(*fyne.Container).Objects[0].(*fyne.Container).Objects[0] = img
+
+				if s == "Dark" {
+					die1, die2 = createDicePair(
+						[6]*fyne.StaticResource{
+							resourceDarkDice1Png,
+							resourceDarkDice2Png,
+							resourceDarkDice3Png,
+							resourceDarkDice4Png,
+							resourceDarkDice5Png,
+							resourceDarkDice6Png},
+						canvas.NewImageFromResource(resourceDarkDice0Png))
+				} else {
+					die1, die2 = createDicePair(
+						[6]*fyne.StaticResource{
+							resourceDice1Png,
+							resourceDice2Png,
+							resourceDice3Png,
+							resourceDice4Png,
+							resourceDice5Png,
+							resourceDice6Png},
+						canvas.NewImageFromResource(resourceDice0Png))
+				}
+			}
+
+			D.Front.Objects[0] = die1.cont
+			D.Front.Objects[1] = die2.cont
+			D.Front.Refresh()
+
+			roll.rolled = ""
+			D.Front.Objects[2].(*canvas.Text).Text = roll.rolled
+			D.Front.Objects[2].(*canvas.Text).Refresh()
+
+			roll.result = ""
+			D.Front.Objects[3].(*canvas.Text).Text = roll.result
+			D.Front.Objects[3].(*canvas.Text).Refresh()
+		}()
+	}
+
+	Settings.dice.Select.PlaceHolder = "Dice:"
+	max = container.NewBorder(nil, nil, icon, nil, container.NewVBox(Settings.dice.Select))
+
+	return max
+}
+
+// Add dice asset to AssetSelect options
+func (s *settings) AddDice(add, check string) {
+	s.dice.Add(add, check)
+}
+
+// Sort dice package AssetSelect options
+func (s *settings) SortAssets() {
+	sort.Strings(s.dice.Select.Options)
+
+	ld := []string{"Light", "Dark"}
+	s.dice.Select.Options = append(ld, s.dice.Select.Options...)
+}
+
+// Clear dice package AssetSelect options
+func (s *settings) ClearAssets() {
+	s.dice.Select.Options = []string{}
 }
