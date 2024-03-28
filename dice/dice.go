@@ -38,7 +38,7 @@ var DICESCID = "fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd
 
 var logger = structures.Logger.WithFields(logrus.Fields{})
 
-var version = semver.MustParse("0.0.0-dev.x")
+var version = semver.MustParse("0.0.0-dev.0")
 
 var chipStack map[uint64]*fyne.StaticResource
 var Settings settings
