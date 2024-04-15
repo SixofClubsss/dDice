@@ -9,3 +9,5 @@ Decentralized dice games built on DERO, forked from newvcas8372/dDice.
 ### Features
 
 * dDice7 contract and UI
+* Fyne 2.4.5
+* dReams 0.12.0
