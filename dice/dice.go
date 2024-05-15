@@ -293,7 +293,7 @@ func placeChipStack() {
 				}
 
 				if addr, _ := gnomon.GetSCIDValuesByKey(DICESCID, fmt.Sprintf("b_%d", i)); addr != nil {
-					if addr[0] == rpc.Wallet.Address {
+					if rpc.Wallet.IsAddress(addr[0]) {
 						amtPlaced = amtPlaced + (amt[0] / div)
 					}
 				}

@@ -251,7 +251,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 			ent.Disable()
 
 			sli := widget.NewSlider(float64(roll.min)*div, float64(roll.max)*div)
-			sli.Step = float64(roll.min)
+			sli.Step = float64(roll.min) * div
 			sli.OnChanged = func(f float64) {
 				ent.SetText(fmt.Sprintf("%s %s", rpc.FromAtomic(sli.Value, 5), currency.Selected))
 			}
@@ -537,7 +537,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 					continue
 				}
 
-				if !synced && gnomes.Scan(d.IsConfiguring()) {
+				if !synced && gnomes.Scan() {
 					logger.Println("[Dice] Syncing")
 					getLastRoll(&die1, &die2)
 					synced = true

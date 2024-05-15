@@ -181,7 +181,7 @@ func getBets() (found bool, bets []uint64) {
 	for i := uint64(0); i <= 30; i++ {
 		if _, u := gnomon.GetSCIDValuesByKey(DICESCID, i); u != nil {
 			if addr, _ := gnomon.GetSCIDValuesByKey(DICESCID, fmt.Sprintf("b_%d", i)); addr != nil {
-				if addr[0] == rpc.Wallet.Address {
+				if rpc.Wallet.IsAddress(addr[0]) {
 					found = true
 					bets = append(bets, i)
 				}
