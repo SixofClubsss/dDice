@@ -12,5 +12,5 @@ Decentralized dice games built on DERO, forked from newvcas8372/dDice. The initi
 * Multiplayer table accepts DERO and dReams
 * Chip stacks
 * NFA Dice asset support
-* Fyne 2.4.5
+* Fyne 2.5.0
 * dReams 0.12.0
