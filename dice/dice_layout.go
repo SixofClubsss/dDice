@@ -13,6 +13,7 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/civilware/tela/logger"
 	dreams "github.com/dReam-dApps/dReams"
 	"github.com/dReam-dApps/dReams/dwidget"
 	"github.com/dReam-dApps/dReams/gnomes"
@@ -538,7 +539,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 				}
 
 				if !synced && gnomes.Scan() {
-					logger.Println("[Dice] Syncing")
+					logger.Printf("[Dice] Syncing\n")
 					getLastRoll(&die1, &die2)
 					synced = true
 					D.Actions.Show()
@@ -547,7 +548,7 @@ func LayoutAll(d *dreams.AppObject) fyne.CanvasObject {
 				getStats()
 				d.WorkDone()
 			case <-d.CloseDapp():
-				logger.Println("[Dice] Done")
+				logger.Printf("[Dice] Done\n")
 				return
 			}
 		}

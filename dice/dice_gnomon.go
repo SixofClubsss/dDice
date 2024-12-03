@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"fyne.io/fyne/v2/canvas"
+	"github.com/civilware/tela/logger"
 	"github.com/dReam-dApps/dReams/gnomes"
 	"github.com/dReam-dApps/dReams/rpc"
 )
@@ -33,7 +34,7 @@ func getRoll(amt float64, tx string, curr string) {
 					if tx_string, _ := gnomon.GetSCIDValuesByKey(DICESCID, pre+index); tx_string != nil {
 						res := strings.Split(tx_string[0], "_")
 						if len(res) < 4 {
-							logger.Errorln("[Dice] wrong len")
+							logger.Errorf("[Dice] wrong len\n")
 							continue
 						}
 

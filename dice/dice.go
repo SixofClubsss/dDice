@@ -15,12 +15,11 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/blang/semver/v4"
-	"github.com/civilware/Gnomon/structures"
+	"github.com/civilware/tela/logger"
 	dreams "github.com/dReam-dApps/dReams"
 	"github.com/dReam-dApps/dReams/gnomes"
 	"github.com/dReam-dApps/dReams/menu"
 	"github.com/dReam-dApps/dReams/rpc"
-	"github.com/sirupsen/logrus"
 )
 
 type die struct {
@@ -36,9 +35,7 @@ type settings struct {
 
 var DICESCID = "fed996730a15744c941d4722db0b1a36dc650939dbf66c246aa7e74f38e409cd"
 
-var logger = structures.Logger.WithFields(logrus.Fields{})
-
-var version = semver.MustParse("0.0.0-dev.5")
+var version = semver.MustParse("0.0.0-dev.6")
 
 var chipStack map[uint64]*fyne.StaticResource
 var Settings settings
@@ -444,9 +441,9 @@ func getDice(url string) {
 	Settings.dice.URL = url
 	path := filepath.Join(pathDice, Settings.dice.Name, "dice1.png")
 	if !dreams.FileExists(path, "Dice") {
-		logger.Println("[Dice] Downloading " + Settings.dice.URL)
+		logger.Printf("[Dice] Downloading %s\n", Settings.dice.URL)
 		if err := dreams.DownloadFile(url, path); err != nil {
-			logger.Errorln("[getDice]", err)
+			logger.Errorf("[getDice] %s\n", err)
 			return
 		}
 
@@ -455,13 +452,13 @@ func getDice(url string) {
 		var err error
 		files, err = filepath.Glob(filepath.Join(pathDice, Settings.dice.Name) + string(filepath.Separator) + "*.png")
 		if err != nil {
-			logger.Errorln("[getDice]", err)
+			logger.Errorf("[getDice] %s\n", err)
 			return
 		}
 	}
 
 	if len(files) < 7 {
-		logger.Errorln("[getDice] Invalid number of dice asset files")
+		logger.Errorf("[getDice] Invalid number of dice asset files\n")
 		return
 	}
 
@@ -469,7 +466,7 @@ func getDice(url string) {
 	for i := 0; i < 7; i++ {
 		by, err := os.ReadFile(files[i])
 		if err != nil {
-			logger.Errorln("[getDice]", err)
+			logger.Errorf("[getDice] %s\n", err)
 			return
 		}
 		diceRes[i] = fyne.NewStaticResource(files[i], by)
@@ -490,18 +487,18 @@ func getDice(url string) {
 func GetZip(name, assetPath string) (filenames []string) {
 	err := os.MkdirAll(assetPath, os.ModePerm)
 	if err != nil {
-		logger.Errorln("[GetZip]", err)
+		logger.Errorf("[GetZip] %s\n", err)
 		return
 	}
 
 	path := filepath.Join(assetPath, name+".zip")
 	filenames, err = dreams.UnzipFile(path, strings.TrimSuffix(path, ".zip"))
 	if err != nil {
-		logger.Errorln("[GetZip]", err)
+		logger.Errorf("[GetZip] %s\n", err)
 		return
 	}
 
-	logger.Debugln("[GetZip] Unzipped files:\n" + strings.Join(filenames, "\n"))
+	logger.Debugf("[GetZip] Unzipped files: %s\n", strings.Join(filenames, "\n"))
 
 	return
 }
